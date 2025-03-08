@@ -134,9 +134,6 @@ export function OCRDocumentProcessor() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [documentUrl, setDocumentUrl] = useState<string>('')
   const [inputMethod, setInputMethod] = useState<'file' | 'url'>('file')
-  const [downloadFormat, setDownloadFormat] = useState<'markdown' | 'html'>(
-    'markdown'
-  )
   const [showDownloadOptions, setShowDownloadOptions] = useState<boolean>(false)
 
   // Process images once when result changes
