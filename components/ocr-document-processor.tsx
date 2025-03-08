@@ -565,6 +565,56 @@ export function OCRDocumentProcessor() {
       const markdownContent =
         viewMode === 'raw' ? result.text : getCombinedMarkdown()
 
+      // Process the markdown to convert image references to HTML img tags
+      let htmlContent = markdownContent
+
+      // Convert markdown image syntax to HTML img tags
+      htmlContent = htmlContent.replace(
+        /!\[(.*?)\]\((data:[^)]+)\)/g,
+        '<img src="$2" alt="$1" style="max-width: 100%;" />'
+      )
+
+      // Process other markdown elements (this is a basic implementation)
+      // Convert headers
+      htmlContent = htmlContent.replace(/^# (.*?)$/gm, '<h1>$1</h1>')
+      htmlContent = htmlContent.replace(/^## (.*?)$/gm, '<h2>$1</h2>')
+      htmlContent = htmlContent.replace(/^### (.*?)$/gm, '<h3>$1</h3>')
+
+      // Convert code blocks
+      htmlContent = htmlContent.replace(
+        /```([\s\S]*?)```/gm,
+        '<pre><code>$1</code></pre>'
+      )
+
+      // Convert inline code
+      htmlContent = htmlContent.replace(/`([^`]+)`/g, '<code>$1</code>')
+
+      // Convert bold text
+      htmlContent = htmlContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+
+      // Convert italic text
+      htmlContent = htmlContent.replace(/\*(.*?)\*/g, '<em>$1</em>')
+
+      // Convert unordered lists
+      htmlContent = htmlContent.replace(/^- (.*?)$/gm, '<li>$1</li>')
+      htmlContent = htmlContent.replace(
+        /(<li>.*?<\/li>(\n|$))+/g,
+        '<ul>$&</ul>'
+      )
+
+      // Convert ordered lists (simplistic approach)
+      htmlContent = htmlContent.replace(/^\d+\. (.*?)$/gm, '<li>$1</li>')
+      htmlContent = htmlContent.replace(
+        /(<li>.*?<\/li>(\n|$))+/g,
+        '<ol>$&</ol>'
+      )
+
+      // Convert paragraphs (simple approach)
+      htmlContent = htmlContent.replace(
+        /^\s*(\S[\s\S]*?)(?=^\s*$|$)/gm,
+        '<p>$1</p>'
+      )
+
       // Create HTML wrapper with styling
       content = `
 <!DOCTYPE html>
@@ -580,22 +630,36 @@ export function OCRDocumentProcessor() {
       max-width: 800px;
       margin: 0 auto;
       padding: 20px;
+      color: #333;
     }
     img {
       max-width: 100%;
+      display: block;
+      margin: 20px 0;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     pre {
       background-color: #f5f5f5;
-      padding: 10px;
+      padding: 16px;
       border-radius: 4px;
       overflow-x: auto;
+      margin: 16px 0;
     }
     code {
       font-family: monospace;
+      background-color: #f5f5f5;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+    pre code {
+      padding: 0;
+      background-color: transparent;
     }
     table {
       border-collapse: collapse;
       width: 100%;
+      margin: 16px 0;
     }
     th, td {
       border: 1px solid #ddd;
@@ -609,6 +673,38 @@ export function OCRDocumentProcessor() {
       margin-bottom: 30px;
       color: #e11d48;
     }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 24px;
+      margin-bottom: 16px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+    h1 {
+      font-size: 2em;
+      border-bottom: 1px solid #eaecef;
+      padding-bottom: 0.3em;
+    }
+    h2 {
+      font-size: 1.5em;
+      border-bottom: 1px solid #eaecef;
+      padding-bottom: 0.3em;
+    }
+    h3 {
+      font-size: 1.25em;
+    }
+    ul, ol {
+      padding-left: 2em;
+      margin: 16px 0;
+    }
+    li {
+      margin: 4px 0;
+    }
+    strong {
+      font-weight: 600;
+    }
+    p {
+      margin: 16px 0;
+    }
   </style>
 </head>
 <body>
@@ -616,7 +712,7 @@ export function OCRDocumentProcessor() {
     <h1>Document Processed by Auntie PDF</h1>
   </div>
   <div class="content">
-    ${markdownContent}
+    ${htmlContent}
   </div>
   <div class="footer" style="margin-top: 40px; text-align: center; font-size: 0.8em; color: #888;">
     Processed with ❤️ by Auntie PDF
