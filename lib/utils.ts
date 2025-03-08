@@ -98,14 +98,8 @@ export function createHtmlWrapper(baseFilename: string, htmlContent: string) {
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>Document Processed by Auntie PDF</h1>
-  </div>
   <div class="content">
     ${htmlContent}
-  </div>
-  <div class="footer" style="margin-top: 40px; text-align: center; font-size: 0.8em; color: #888;">
-    Processed with ❤️ by Auntie PDF
   </div>
 </body>
 </html>
