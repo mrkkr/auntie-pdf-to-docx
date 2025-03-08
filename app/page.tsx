@@ -29,7 +29,7 @@ export default function HomePage() {
                   <img
                     src='/logo.svg'
                     alt='Auntie PDF Logo'
-                    className='h-16 w-16 object-contain'
+                    className='h-24 w-24 object-cover rounded-full'
                   />
                 </div>
               </div>

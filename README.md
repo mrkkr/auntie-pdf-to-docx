@@ -24,6 +24,16 @@ Auntie PDF leverages advanced AI technologies including:
 
 ## Getting Started
 
+### Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```
+MISTRAL_API_KEY="your_mistral_api_key"
+```
+
+You can obtain a Mistral API key by signing up at [Mistral AI's platform](https://mistral.ai/).
+
 First, run the development server:
 
 ```bash
@@ -55,3 +65,7 @@ Try it out at: [Auntie PDF](https://auntiepdf.com)
 If you're interested in following all the random projects I'm working on, you can find me on Twitter:
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/deepwhitman?style=social)](https://x.com/deepwhitman)
+
+## Sponsored by
+
+[Shorts Generator](https://www.shortsgenerator.com/) - Create viral short videos in minutes!
