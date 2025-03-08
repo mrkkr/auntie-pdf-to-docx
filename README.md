@@ -1,6 +1,6 @@
 # Auntie PDF - Your Sassy PDF Guru
 
-![Auntie PDF Preview](./app/opengraph-image.png)
+![Auntie PDF Preview](./demo.gif)
 
 Your all-knowing guide that unpacks every PDF into clear, actionable insights.
 
