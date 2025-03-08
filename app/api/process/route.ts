@@ -77,15 +77,22 @@ export async function POST(request: NextRequest) {
       })
     }
   } catch (error) {
-    console.error('Error processing file with OCR:', error)
-
-    // Check for specific error types
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error('Error processing document:', error)
+    
+    // Check if the error is related to file size or processing limitations
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    
+    if (errorMessage.includes('Request Entity Too Large') || 
+        errorMessage.includes('Payload Too Large') ||
+        errorMessage.includes('size limit')) {
+      return NextResponse.json(
+        { error: 'Document is too large to process. Please try a smaller file (under 10MB).' },
+        { status: 413 }
+      )
     }
-
+    
     return NextResponse.json(
-      { error: 'Failed to process file with OCR' },
+      { error: 'Failed to process document: ' + errorMessage },
       { status: 500 }
     )
   }

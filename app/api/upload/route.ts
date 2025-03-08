@@ -1,5 +1,8 @@
 import { Mistral } from '@mistralai/mistralai'
 
+// Define max file size (10MB)
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData()
@@ -15,6 +18,14 @@ export async function POST(request: Request) {
       return Response.json(
         { error: 'Only PDF files are supported' },
         { status: 400 }
+      )
+    }
+
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      return Response.json(
+        { error: 'File size exceeds the 10MB limit' },
+        { status: 413 }
       )
     }
 

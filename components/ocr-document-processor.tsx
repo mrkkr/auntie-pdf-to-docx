@@ -256,6 +256,11 @@ export function OCRDocumentProcessor() {
         body: formData,
       })
 
+      // Handle 413 Payload Too Large error specifically
+      if (uploadResponse.status === 413) {
+        throw new Error("Oh my, that PDF is too big for Auntie's reading glasses! Please try a smaller document (under 10MB).")
+      }
+      
       if (!uploadResponse.ok) {
         const errorData = await uploadResponse.json()
         throw new Error(errorData.error || 'Failed to upload file')
@@ -274,11 +279,22 @@ export function OCRDocumentProcessor() {
       })
 
       if (!processResponse.ok) {
-        const errorData = await processResponse.json()
+        const errorData = await processResponse.json().catch(() => ({}))
         throw new Error(errorData.error || 'Failed to process file')
       }
 
-      const data = await processResponse.json()
+      // Safely parse the response as JSON
+      let data;
+      try {
+        data = await processResponse.json();
+      } catch (jsonError) {
+        console.error('Failed to parse JSON response:', jsonError);
+        if (jsonError instanceof SyntaxError && jsonError.message.includes('Unexpected token')) {
+          throw new Error("Auntie couldn't make sense of this document. It might be too large or complex for processing.");
+        }
+        throw new Error('Failed to process the document response');
+      }
+      
       console.log('OCR Response data:', data)
 
       try {
