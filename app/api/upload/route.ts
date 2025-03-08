@@ -1,7 +1,7 @@
 import { Mistral } from '@mistralai/mistralai'
 
-// Define max file size (10MB)
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+// Define max file size (5MB)
+const MAX_FILE_SIZE = 5 * 1024 * 1024
 
 export async function POST(request: Request) {
   try {

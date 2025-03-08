@@ -261,7 +261,7 @@ export function OCRDocumentProcessor() {
       // Handle 413 Payload Too Large error specifically
       if (uploadResponse.status === 413) {
         throw new Error(
-          "Oh my, that PDF is too big for Auntie's reading glasses! Please try a smaller document (under 10MB)."
+          "Oh my, that PDF is too big for Auntie's reading glasses! Please try a smaller document (under 5MB) or use the url option."
         )
       }
 

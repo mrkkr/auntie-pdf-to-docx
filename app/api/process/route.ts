@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
         errorMessage.includes('Payload Too Large') ||
         errorMessage.includes('size limit')) {
       return NextResponse.json(
-        { error: 'Document is too large to process. Please try a smaller file (under 10MB).' },
+        { error: 'Document is too large to process. Please try a smaller file (under 5MB).' },
         { status: 413 }
       )
     }
