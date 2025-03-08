@@ -17,15 +17,15 @@ export async function POST(request: NextRequest) {
       new URL(url)
     } catch (e) {
       console.error('Invalid URL format:', e)
-      return NextResponse.json(
-        { error: 'Invalid URL format' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 })
     }
 
     // Check if URL potentially points to a PDF
     // This is a simple check, not foolproof but helps prevent obvious non-PDF URLs
-    if (!url.toLowerCase().endsWith('.pdf') && !url.toLowerCase().includes('/pdf/')) {
+    if (
+      !url.toLowerCase().endsWith('.pdf') &&
+      !url.toLowerCase().includes('/pdf/')
+    ) {
       console.warn('URL may not be a PDF:', url)
       // We'll still try to process it, but log a warning
     }
@@ -92,22 +92,27 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error('Error processing document from URL:', error)
-    
+
     // Check if the error is related to file size or processing limitations
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    
-    if (errorMessage.includes('Request Entity Too Large') || 
-        errorMessage.includes('Payload Too Large') ||
-        errorMessage.includes('size limit')) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+
+    if (
+      errorMessage.includes('Request Entity Too Large') ||
+      errorMessage.includes('Payload Too Large') ||
+      errorMessage.includes('size limit')
+    ) {
       return NextResponse.json(
-        { error: 'Document is too large to process. Please try a smaller file (under 10MB).' },
+        {
+          error:
+            'Document is too large to process. Please try a smaller file (under 10MB).',
+        },
         { status: 413 }
       )
     }
-    
+
     return NextResponse.json(
       { error: 'Failed to process document from URL: ' + errorMessage },
       { status: 500 }
     )
   }
-} 
+}

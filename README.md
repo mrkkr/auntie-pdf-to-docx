@@ -38,13 +38,20 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Learn More
+## Demo
 
-To learn more about the technologies used in this project:
+Try it out at: [Auntie PDF](https://auntiepdf.com)
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Mistral OCR](https://mistral.ai/en/news/mistral-ocr) - Learn about the OCR technology powering our PDF parsing
+## License
 
-## Connect
+[MIT](https://github.com/btahir/auntie-pdf/blob/main/LICENSE)
 
-Follow the creator: [@deepwhitman](https://x.com/deepwhitman)
+## Acknowledgments
+
+- Inspired by Mistral's OCR release
+
+## Follow Me
+
+If you're interested in following all the random projects I'm working on, you can find me on Twitter:
+
+[![Twitter Follow](https://img.shields.io/twitter/follow/deepwhitman?style=social)](https://x.com/deepwhitman)
