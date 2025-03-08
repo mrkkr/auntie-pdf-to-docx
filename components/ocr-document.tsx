@@ -231,12 +231,12 @@ export function OCRDocumentProcessor() {
 
   const handleUpload = async () => {
     if (!file) {
-      setError('Please select a file first')
+      setError('Sweetie, you forgot to select a file first!')
       return
     }
 
     if (file.type !== 'application/pdf') {
-      setError('Only PDF files are supported')
+      setError('Oh honey, I only work with PDF files! Let\'s try again.')
       return
     }
 
@@ -366,6 +366,7 @@ export function OCRDocumentProcessor() {
     setResult(null)
     setError(null)
     setStatus('idle')
+    setProcessedMarkdown({})
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -377,131 +378,198 @@ export function OCRDocumentProcessor() {
 
   return (
     <div className='w-full space-y-6 mb-12'>
-      <div className='space-y-2'>
-        <label className='block text-sm font-medium'>Upload PDF Document</label>
-        <div className='flex items-center space-x-2'>
-          <input
-            ref={fileInputRef}
-            type='file'
-            accept='.pdf'
-            onChange={handleFileChange}
-            className='block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-md file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-primary file:text-white
-                      hover:file:bg-primary/90
-                      cursor-pointer'
-            disabled={status === 'uploading' || status === 'processing'}
-          />
-        </div>
-        {file && (
-          <p className='text-sm text-gray-500 mt-1'>
-            Selected file: {file.name} ({(file.size / 1024 / 1024).toFixed(2)}{' '}
-            MB)
-          </p>
-        )}
-      </div>
-
-      <div className='flex space-x-2'>
-        <Button
-          onClick={handleUpload}
-          disabled={!file || status === 'uploading' || status === 'processing'}
-          className='flex-1'
-        >
-          {status === 'uploading'
-            ? 'Uploading...'
-            : status === 'processing'
-            ? 'Processing...'
-            : 'Process Document'}
-        </Button>
-        <Button
-          onClick={handleClear}
-          variant='outline'
-          disabled={
-            (!file && !result) ||
-            status === 'uploading' ||
-            status === 'processing'
-          }
-        >
-          Clear
-        </Button>
-      </div>
-
-      {(status === 'uploading' || status === 'processing') && (
-        <div className='p-4 bg-blue-50 border border-blue-100 rounded-md text-blue-700 text-sm'>
-          {status === 'uploading'
-            ? 'Uploading your document to the OCR service...'
-            : 'Processing your document with OCR technology. This may take a moment...'}
-        </div>
-      )}
-
-      {error && (
-        <div className='p-3 rounded-md bg-red-50 border border-red-200 text-red-700'>
-          <p className='font-medium'>Error</p>
-          <p className='text-sm'>{error}</p>
-        </div>
-      )}
-
-      {result && (
-        <div className='space-y-4 w-full'>
-          <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2'>
-            <h3 className='text-lg font-medium'>Document Processing Results</h3>
-            <div className='flex items-center gap-2 flex-wrap'>
-              <p className='text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full'>
-                Processing complete
-              </p>
-            </div>
-          </div>
-
-          <Tabs defaultValue='content' className='w-full'>
-            <TabsList className='mb-2'>
-              <TabsTrigger value='content'>Document Content</TabsTrigger>
-              <TabsTrigger value='chat'>Ask Questions</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value='content' className='space-y-4'>
-              <div className='flex items-center gap-2 justify-end'>
-                <Button onClick={toggleViewMode} variant='outline' size='sm'>
-                  {viewMode === 'rendered' ? 'View Raw Text' : 'View Rendered'}
-                </Button>
+      <div className='space-y-4'>
+        <div className='flex flex-col sm:flex-row gap-4'>
+          <label className='flex-1'>
+            <input
+              type='file'
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept='application/pdf'
+              className='hidden'
+            />
+            <div 
+              className={`flex items-center justify-center px-4 py-2 border-2 border-dashed rounded-lg cursor-pointer transition-colors hover:bg-red-50 ${
+                file ? 'border-red-400 bg-red-50' : 'border-gray-300'
+              }`}
+            >
+              <div className='text-center py-4'>
+                {file ? (
+                  <div className='text-red-600 font-semibold'>{file.name}</div>
+                ) : (
+                  <>
+                    <svg
+                      className='mx-auto h-10 w-10 text-red-400'
+                      fill='none'
+                      stroke='currentColor'
+                      viewBox='0 0 24 24'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={1.5}
+                        d='M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+                      />
+                    </svg>
+                    <p className='mt-2 text-sm text-gray-600'>
+                      Click to select your PDF, darling
+                    </p>
+                  </>
+                )}
               </div>
+            </div>
+          </label>
 
-              {viewMode === 'raw' ? (
-                <Textarea
-                  value={result.text}
-                  readOnly
-                  className='h-[500px] font-mono text-sm'
-                />
-              ) : (
-                <div className='bg-white border rounded-md p-4 max-h-[80vh] h-[500px] overflow-auto'>
-                  {result.pages && result.pages.length > 0 ? (
-                    displayMode === 'paginated' ? (
-                      // Paginated view
-                      result.pages.map((page, index) => {
-                        return (
-                          <div
-                            key={index}
-                            className='mb-8 pb-8 border-b last:border-b-0'
-                          >
-                            <div className='bg-gray-50 p-2 mb-2 text-sm text-gray-500 rounded'>
-                              Page {page.index + 1}
-                            </div>
-                            <div className='prose prose-sm max-w-none overflow-x-auto'>
-                              <ReactMarkdown
-                                remarkPlugins={[remarkGfm, remarkMath]}
-                                rehypePlugins={[rehypeKatex]}
-                                components={customRenderers}
-                                urlTransform={urlTransformer}
-                              >
-                                {processedMarkdown[page.index] || ''}
-                              </ReactMarkdown>
-                            </div>
-                          </div>
+          <div className='flex gap-2'>
+            <button
+              onClick={handleUpload}
+              disabled={!file || status === 'uploading' || status === 'processing'}
+              className={`px-4 py-2 rounded-lg font-medium ${
+                !file || status === 'uploading' || status === 'processing'
+                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                  : 'bg-red-600 text-white hover:bg-red-700 transition-colors'
+              }`}
+            >
+              {status === 'uploading' || status === 'processing'
+                ? 'Working on it...'
+                : 'Let Auntie Read It!'}
+            </button>
+
+            <button
+              onClick={handleClear}
+              disabled={!file && !result}
+              className={`px-4 py-2 rounded-lg font-medium ${
+                !file && !result
+                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors'
+              }`}
+            >
+              Start Fresh
+            </button>
+          </div>
+        </div>
+
+        {error && (
+          <div className='p-4 bg-red-50 border border-red-200 rounded-lg text-red-700'>
+            <div className='font-medium mb-1'>Oh dear! A little hiccup:</div>
+            <div>{error}</div>
+          </div>
+        )}
+
+        {status === 'uploading' && (
+          <div className='p-6 text-center'>
+            <div className='inline-block animate-spin rounded-full h-8 w-8 border-4 border-red-600 border-t-transparent'></div>
+            <p className='mt-3 text-gray-600'>Auntie is warming up her reading glasses...</p>
+          </div>
+        )}
+
+        {status === 'processing' && (
+          <div className='p-6 text-center'>
+            <div className='inline-block animate-spin rounded-full h-8 w-8 border-4 border-red-600 border-t-transparent'></div>
+            <p className='mt-3 text-gray-600'>Just a moment, sweetie! Auntie is reading through your document...</p>
+          </div>
+        )}
+
+        {result && (
+          <div className='space-y-4 w-full'>
+            <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2'>
+              <h3 className='text-xl font-medium text-red-600'>Auntie's Analysis</h3>
+              <div className='flex items-center gap-2 flex-wrap'>
+                <p className='text-xs bg-red-50 text-red-600 px-3 py-1 rounded-full font-medium border border-red-100'>
+                  Analysis complete, sweetie!
+                </p>
+              </div>
+            </div>
+
+            <Tabs defaultValue='content' className='w-full'>
+              <TabsList className='mb-2 bg-red-50 p-1 rounded-md'>
+                <TabsTrigger 
+                  value='content' 
+                  className='data-[state=active]:bg-red-600 data-[state=active]:text-white'
+                >
+                  Document Content
+                </TabsTrigger>
+                <TabsTrigger 
+                  value='chat'
+                  className='data-[state=active]:bg-red-600 data-[state=active]:text-white'
+                >
+                  Ask Auntie
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value='content' className='space-y-4'>
+                <div className='flex items-center gap-2 justify-end'>
+                  <Button 
+                    onClick={toggleViewMode} 
+                    variant='outline' 
+                    size='sm'
+                    className='border-red-200 hover:bg-red-50 text-red-600'
+                  >
+                    {viewMode === 'rendered' ? 'View Raw Text' : 'View Rendered'}
+                  </Button>
+                  {result.pages && result.pages.length > 1 && (
+                    <Button
+                      onClick={() =>
+                        setDisplayMode(
+                          displayMode === 'paginated' ? 'combined' : 'paginated'
                         )
-                      })
+                      }
+                      variant='outline'
+                      size='sm'
+                      className='border-red-200 hover:bg-red-50 text-red-600'
+                    >
+                      {displayMode === 'paginated' ? 'Show Combined' : 'Show Pages'}
+                    </Button>
+                  )}
+                </div>
+
+                {viewMode === 'raw' ? (
+                  <Textarea
+                    value={result.text}
+                    readOnly
+                    className='h-[500px] font-mono text-sm'
+                  />
+                ) : (
+                  <div className='bg-white border rounded-md p-4 max-h-[80vh] h-[500px] overflow-auto'>
+                    {result.pages && result.pages.length > 0 ? (
+                      displayMode === 'paginated' ? (
+                        // Paginated view
+                        result.pages.map((page, index) => {
+                          return (
+                            <div
+                              key={index}
+                              className='mb-8 pb-8 border-b last:border-b-0'
+                            >
+                              <div className='bg-gray-50 p-2 mb-2 text-sm text-gray-500 rounded'>
+                                Page {page.index + 1}
+                              </div>
+                              <div className='prose prose-sm max-w-none overflow-x-auto'>
+                                <ReactMarkdown
+                                  remarkPlugins={[remarkGfm, remarkMath]}
+                                  rehypePlugins={[rehypeKatex]}
+                                  components={customRenderers}
+                                  urlTransform={urlTransformer}
+                                >
+                                  {processedMarkdown[page.index] || ''}
+                                </ReactMarkdown>
+                              </div>
+                            </div>
+                          )
+                        })
+                      ) : (
+                        // Combined view
+                        <div className='prose prose-sm max-w-none overflow-x-auto'>
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm, remarkMath]}
+                            rehypePlugins={[rehypeKatex]}
+                            components={customRenderers}
+                            urlTransform={urlTransformer}
+                          >
+                            {getCombinedMarkdown()}
+                          </ReactMarkdown>
+                        </div>
+                      )
                     ) : (
-                      // Combined view
                       <div className='prose prose-sm max-w-none overflow-x-auto'>
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm, remarkMath]}
@@ -509,42 +577,31 @@ export function OCRDocumentProcessor() {
                           components={customRenderers}
                           urlTransform={urlTransformer}
                         >
-                          {getCombinedMarkdown()}
+                          {processedMarkdown[0] || ''}
                         </ReactMarkdown>
                       </div>
-                    )
-                  ) : (
-                    <div className='prose prose-sm max-w-none overflow-x-auto'>
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm, remarkMath]}
-                        rehypePlugins={[rehypeKatex]}
-                        components={customRenderers}
-                        urlTransform={urlTransformer}
-                      >
-                        {processedMarkdown[0] || ''}
-                      </ReactMarkdown>
-                    </div>
-                  )}
-                </div>
-              )}
-            </TabsContent>
+                    )}
+                  </div>
+                )}
+              </TabsContent>
 
-            <TabsContent value='chat'>
-              <div className='p-4 bg-blue-50 border border-blue-100 rounded-md text-blue-700 text-sm mb-4'>
-                <p className='font-medium'>Document Understanding</p>
-                <p>
-                  Ask questions about your document in natural language. The AI
-                  will analyze the content and provide relevant answers.
-                </p>
-              </div>
-              <DocumentChat
-                documentContent={getCombinedMarkdown()}
-                isEnabled={status === 'complete'}
-              />
-            </TabsContent>
-          </Tabs>
-        </div>
-      )}
+              <TabsContent value='chat'>
+                <div className='p-4 bg-red-50 border border-red-100 rounded-md text-red-700 text-sm mb-4'>
+                  <p className='font-medium'>Ask Auntie About Your Document</p>
+                  <p>
+                    Need to know something specific? Just ask me, honey! 
+                    I'll search through your document and find just what you need.
+                  </p>
+                </div>
+                <DocumentChat
+                  documentContent={getCombinedMarkdown()}
+                  isEnabled={status === 'complete'}
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
