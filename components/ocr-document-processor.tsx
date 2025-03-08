@@ -873,16 +873,14 @@ export function OCRDocumentProcessor() {
               </TabsList>
 
               <TabsContent value='content' className='space-y-4'>
-                <div className='flex items-center gap-2 justify-end'>
+                <div className='flex items-center gap-2 justify-between sm:justify-end'>
                   <Button
                     onClick={toggleViewMode}
                     variant='outline'
                     size='sm'
-                    className='border-red-200 hover:bg-red-50 text-red-600'
+                    className='border-red-200 hover:bg-red-50 text-red-600 text-xs sm:text-sm'
                   >
-                    {viewMode === 'rendered'
-                      ? 'View Raw Text'
-                      : 'View Rendered'}
+                    {viewMode === 'rendered' ? 'View Text' : 'View Rendered'}
                   </Button>
                   {result.pages && result.pages.length > 1 && (
                     <Button
@@ -893,7 +891,7 @@ export function OCRDocumentProcessor() {
                       }
                       variant='outline'
                       size='sm'
-                      className='border-red-200 hover:bg-red-50 text-red-600'
+                      className='border-red-200 hover:bg-red-50 text-red-600 text-xs sm:text-sm'
                     >
                       {displayMode === 'paginated'
                         ? 'Show Combined'
@@ -906,7 +904,7 @@ export function OCRDocumentProcessor() {
                       onClick={toggleDownloadOptions}
                       variant='outline'
                       size='sm'
-                      className='border-red-200 hover:bg-red-50 text-red-600'
+                      className='border-red-200 hover:bg-red-50 text-red-600 text-xs sm:text-sm'
                     >
                       Download ▼
                     </Button>
