@@ -134,6 +134,10 @@ export function OCRDocumentProcessor() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [documentUrl, setDocumentUrl] = useState<string>('')
   const [inputMethod, setInputMethod] = useState<'file' | 'url'>('file')
+  const [downloadFormat, setDownloadFormat] = useState<'markdown' | 'html'>(
+    'markdown'
+  )
+  const [showDownloadOptions, setShowDownloadOptions] = useState<boolean>(false)
 
   // Process images once when result changes
   useEffect(() => {
@@ -530,6 +534,125 @@ export function OCRDocumentProcessor() {
     }
   }
 
+  // Update the download function to handle different formats
+  const handleDownload = (format: 'markdown' | 'html') => {
+    if (!result) return
+
+    // Determine filename based on input method and format
+    const baseFilename =
+      inputMethod === 'file' && file
+        ? file.name.replace('.pdf', '')
+        : 'parsed_document'
+
+    const extension = format === 'markdown' ? 'md' : 'html'
+    const filename = `${baseFilename}_${format}.${extension}`
+
+    let content = ''
+    let mimeType = ''
+
+    if (format === 'markdown') {
+      // For markdown, strip out images if requested
+      let markdownContent =
+        viewMode === 'raw' ? result.text : getCombinedMarkdown()
+
+      // Strip out image references from markdown
+      markdownContent = markdownContent.replace(/!\[.*?\]\(.*?\)/g, '')
+
+      content = markdownContent
+      mimeType = 'text/markdown'
+    } else if (format === 'html') {
+      // For HTML, preserve everything including images
+      const markdownContent =
+        viewMode === 'raw' ? result.text : getCombinedMarkdown()
+
+      // Create HTML wrapper with styling
+      content = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${baseFilename} - Auntie PDF</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    img {
+      max-width: 100%;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    code {
+      font-family: monospace;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #e11d48;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Document Processed by Auntie PDF</h1>
+  </div>
+  <div class="content">
+    ${markdownContent}
+  </div>
+  <div class="footer" style="margin-top: 40px; text-align: center; font-size: 0.8em; color: #888;">
+    Processed with ❤️ by Auntie PDF
+  </div>
+</body>
+</html>
+      `
+      mimeType = 'text/html'
+    }
+
+    // Create a blob with the content
+    const blob = new Blob([content], { type: mimeType })
+
+    // Create a download link
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+
+    // Trigger the download
+    document.body.appendChild(a)
+    a.click()
+
+    // Clean up
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+
+    // Hide the options after download
+    setShowDownloadOptions(false)
+  }
+
+  // Toggle download options dropdown
+  const toggleDownloadOptions = () => {
+    setShowDownloadOptions(!showDownloadOptions)
+  }
+
   return (
     <div className='w-full space-y-6 mb-12'>
       <div className='space-y-4'>
@@ -787,6 +910,37 @@ export function OCRDocumentProcessor() {
                         : 'Show Pages'}
                     </Button>
                   )}
+                  {/* Replace single download button with download options */}
+                  <div className='relative'>
+                    <Button
+                      onClick={toggleDownloadOptions}
+                      variant='outline'
+                      size='sm'
+                      className='border-red-200 hover:bg-red-50 text-red-600'
+                    >
+                      Download ▼
+                    </Button>
+
+                    {showDownloadOptions && (
+                      <div className='absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 border border-amber-200'>
+                        <div className='py-1'>
+                          <button
+                            onClick={() => handleDownload('markdown')}
+                            className='w-full text-left px-4 py-2 text-sm text-amber-800 hover:bg-amber-50 flex items-center'
+                          >
+                            <span className='mr-1'>📄</span> Markdown (text
+                            only)
+                          </button>
+                          <button
+                            onClick={() => handleDownload('html')}
+                            className='w-full text-left px-4 py-2 text-sm text-amber-800 hover:bg-amber-50 flex items-center'
+                          >
+                            <span className='mr-1'>🖼️</span> HTML (with images)
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {viewMode === 'raw' ? (
