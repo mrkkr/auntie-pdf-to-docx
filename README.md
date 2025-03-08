@@ -50,7 +50,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ### Deployment Notes
 
-This app is deployed on Vercel and has a limitation of only allowing PDF uploads up to about 4MB due to Vercel's body size request limit. You can still upload larger files locally or use the public URL option.
+This app is deployed on Vercel and has a file upload limit of 4.5MB due to Vercel's request body size restriction. You can still upload larger files locally or use the public URL option.
+
+To bypass this limitation, we can use services like UploadThing, which upload files directly to your storage (or theirs) using a presigned URL, or implement a similar solution ourselves. I’m still undecided on whether to add this layer.
 
 ## Demo
 
