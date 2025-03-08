@@ -19,7 +19,7 @@ import 'katex/dist/katex.min.css'
 
 import { DocumentChat } from './document-chat'
 import { FileText, Upload, RefreshCw, Coffee } from 'lucide-react'
-import { createHtmlWrapper } from '@/utils/helpers'
+import { createHtmlWrapper } from '@/lib/utils'
 
 type ProcessingStatus =
   | 'idle'
