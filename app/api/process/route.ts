@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     const client = new Mistral({ apiKey })
-    
+
     // Get a signed URL for the uploaded file
     const signedUrl = await client.files.getSignedUrl({
       fileId: fileId,
@@ -31,62 +31,62 @@ export async function POST(request: NextRequest) {
     console.log('Processing document from URL:', signedUrl.url)
 
     // Process the file with OCR
-    const ocrResponse = await client.ocr.process({
-      model: "mistral-ocr-latest",
+    const ocrResponse = (await client.ocr.process({
+      model: 'mistral-ocr-latest',
       document: {
-        type: "document_url",
+        type: 'document_url',
         documentUrl: signedUrl.url,
       },
-      includeImageBase64: true  // Include base64-encoded images in response
-    }) as any // Use 'any' type since Mistral's API might return different structures
+      includeImageBase64: true, // Include base64-encoded images in response
+    })) as any // Use 'any' type since Mistral's API might return different structures
 
     // Log response structure for debugging (remove sensitive data)
-    console.log('OCR Response structure:', JSON.stringify({
-      keys: Object.keys(ocrResponse),
-      hasContent: !!ocrResponse.content,
-      hasPages: Array.isArray(ocrResponse.pages),
-      pagesCount: Array.isArray(ocrResponse.pages) ? ocrResponse.pages.length : 0
-    }, null, 2))
+    console.log(
+      'OCR Response structure:',
+      JSON.stringify(
+        {
+          keys: Object.keys(ocrResponse),
+          hasContent: !!ocrResponse.content,
+          hasPages: Array.isArray(ocrResponse.pages),
+          pagesCount: Array.isArray(ocrResponse.pages)
+            ? ocrResponse.pages.length
+            : 0,
+        },
+        null,
+        2
+      )
+    )
 
     // The Mistral OCR response format may vary, we need to handle different structures
     if (ocrResponse.content) {
       // If the response has a content field, we return it directly
-      return NextResponse.json({ 
+      return NextResponse.json({
         text: ocrResponse.content,
-        hasContent: true
+        hasContent: true,
       })
     } else if (ocrResponse.pages && Array.isArray(ocrResponse.pages)) {
-      // If the response has pages array, we return them along with a combined text
-      const combinedText = ocrResponse.pages
-        .map((page: any) => page.markdown || '')
-        .join('\n\n')
-      
-      return NextResponse.json({ 
+      return NextResponse.json({
         text: JSON.stringify(ocrResponse),
-        hasStructuredData: true
+        hasStructuredData: true,
       })
     } else {
       // Fallback: return the whole response as JSON string
-      return NextResponse.json({ 
+      return NextResponse.json({
         text: JSON.stringify(ocrResponse),
-        fallback: true
+        fallback: true,
       })
     }
-    
   } catch (error) {
     console.error('Error processing file with OCR:', error)
-    
+
     // Check for specific error types
     if (error instanceof Error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
-    
+
     return NextResponse.json(
       { error: 'Failed to process file with OCR' },
       { status: 500 }
     )
   }
-} 
+}

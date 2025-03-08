@@ -22,7 +22,7 @@ export default function HomePage() {
           <div className='mb-8 text-center'>
             <div className='flex justify-center mb-4'>
               <div className='relative'>
-                <div className='absolute top-0 -right-8 bg-red-100 text-red-600 rounded-full px-1 py-0.5 text-[0.6rem] font-medium transform rotate-30 border-2 border-red-300'>
+                <div className='absolute -top-1 -right-6 bg-red-100 text-red-600 rounded-full px-1 py-0.5 text-[0.6rem] font-medium transform rotate-30 border-2 border-red-300'>
                   She knows best!
                 </div>
                 <div className='h-24 w-24 bg-red-600 rounded-full flex items-center justify-center shadow-lg border-4 border-amber-200 overflow-hidden'>
