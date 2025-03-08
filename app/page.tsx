@@ -4,16 +4,15 @@ import { Github } from 'lucide-react'
 export default function HomePage() {
   return (
     <div className='min-h-screen bg-gradient-to-b from-amber-50 to-white'>
-      {/* GitHub link in the top right */}
-      <div className='absolute top-4 right-4 md:top-6 md:right-6'>
+      {/* Sponsorship Banner */}
+      <div className='w-full bg-gradient-to-r from-purple-700 via-indigo-600 to-blue-500 text-white py-2 text-center'>
         <a
-          href='https://github.com/btahir/auntie-pdf'
+          href='https://www.shortsgenerator.com/'
           target='_blank'
           rel='noopener noreferrer'
-          className='flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow-md hover:shadow-lg transition-all text-amber-800 border border-amber-200'
+          className='hover:underline font-medium'
         >
-          <Github className='h-5 w-5' />
-          <span className='hidden sm:inline font-medium'>View on GitHub</span>
+          Sponsored by Shorts Generator - Create viral short videos in minutes!
         </a>
       </div>
 
@@ -42,10 +41,23 @@ export default function HomePage() {
               actionable insights. Just like your favorite aunt, but for
               documents!
             </p>
+
+            {/* GitHub link moved here */}
+            <div className='mt-4 flex justify-center'>
+              <a
+                href='https://github.com/btahir/auntie-pdf'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow-md hover:shadow-lg transition-all text-amber-800 border border-amber-200'
+              >
+                <Github className='h-5 w-5' />
+                <span className='font-medium'>View on GitHub</span>
+              </a>
+            </div>
           </div>
 
           <div className='bg-white rounded-xl shadow-lg p-6 md:p-8 border-2 border-red-200 relative'>
-            <div className='absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-1 rounded-full font-medium shadow-md'>
+            <div className='absolute -top-4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-1 rounded-full font-medium shadow-md text-sm whitespace-nowrap'>
               Auntie&apos;s Reading Room
             </div>
             <div className='mb-6 text-center'>
