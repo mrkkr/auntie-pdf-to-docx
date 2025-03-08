@@ -1,9 +1,11 @@
 'use client'
 
+import type React from 'react'
+
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, Send, User, Bot, RefreshCw } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 interface Message {
@@ -28,7 +30,7 @@ const prepareDocumentContent = (
 
   // Remove any remaining image references in markdown
   cleanedContent = cleanedContent.replace(
-    /!\[.*?\]\(.*?\)/g,
+    /!\[.*?\]$$.*?$$/g,
     '[IMAGE REFERENCE]'
   )
 
@@ -146,11 +148,17 @@ export function DocumentChat({
         </Alert>
       )}
 
-      <div className='border rounded-md bg-white p-4 max-h-[400px] overflow-y-auto'>
+      <div className='border-2 border-amber-200 rounded-md bg-white p-4 max-h-[400px] overflow-y-auto shadow-inner'>
         {messages.length === 0 ? (
-          <div className='text-center text-gray-500 p-6'>
-            <p>
+          <div className='text-center p-8'>
+            <div className='bg-red-50 rounded-full w-16 h-16 mx-auto flex items-center justify-center mb-3'>
+              <div className='text-red-600 text-2xl font-serif'>A</div>
+            </div>
+            <p className='text-amber-700 font-medium'>
               Ask questions about your document to get insights and information.
+            </p>
+            <p className='text-amber-600 text-sm italic mt-1'>
+              "What would you like to know, dearie?"
             </p>
           </div>
         ) : (
@@ -160,13 +168,27 @@ export function DocumentChat({
                 key={index}
                 className={`p-3 rounded-lg ${
                   message.role === 'user'
-                    ? 'bg-blue-50 border border-blue-100 ml-8'
-                    : 'bg-gray-50 border border-gray-100 mr-8'
+                    ? 'bg-blue-50 border-2 border-blue-100 ml-8'
+                    : 'bg-red-50 border-2 border-red-100 mr-8'
                 }`}
               >
-                <p className='text-xs font-medium mb-1'>
-                  {message.role === 'user' ? 'You' : 'Assistant'}
-                </p>
+                <div className='flex items-center gap-2 mb-2'>
+                  {message.role === 'user' ? (
+                    <>
+                      <div className='bg-blue-100 rounded-full p-1'>
+                        <User className='h-3 w-3 text-blue-600' />
+                      </div>
+                      <p className='text-xs font-medium text-blue-700'>You</p>
+                    </>
+                  ) : (
+                    <>
+                      <div className='bg-red-100 rounded-full p-1'>
+                        <Bot className='h-3 w-3 text-red-600' />
+                      </div>
+                      <p className='text-xs font-medium text-red-700'>Auntie</p>
+                    </>
+                  )}
+                </div>
                 <p className='whitespace-pre-line'>{message.content}</p>
               </div>
             ))}
@@ -175,7 +197,7 @@ export function DocumentChat({
       </div>
 
       {error && (
-        <div className='p-3 rounded-md bg-red-50 border border-red-200 text-red-700'>
+        <div className='p-3 rounded-md bg-red-50 border-2 border-red-200 text-red-700'>
           <p className='text-sm'>{error}</p>
         </div>
       )}
@@ -185,14 +207,27 @@ export function DocumentChat({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder='Ask a question about your document...'
-          className='flex-1'
+          className='flex-1 border-amber-200 focus-visible:ring-red-400'
           disabled={!isEnabled || isLoading}
         />
         <Button
           type='submit'
           disabled={!isEnabled || isLoading || !query.trim()}
+          className={`bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 ${
+            !isEnabled || isLoading || !query.trim() ? 'opacity-50' : ''
+          }`}
         >
-          {isLoading ? 'Thinking...' : 'Ask'}
+          {isLoading ? (
+            <span className='flex items-center'>
+              <RefreshCw className='h-4 w-4 mr-2 animate-spin' />
+              Thinking...
+            </span>
+          ) : (
+            <span className='flex items-center'>
+              <Send className='h-4 w-4 mr-2' />
+              Ask
+            </span>
+          )}
         </Button>
       </form>
     </div>

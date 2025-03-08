@@ -1,5 +1,7 @@
 'use client'
 
+import type React from 'react'
+
 import { useState, useRef, useEffect } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -16,6 +18,7 @@ import rehypeKatex from 'rehype-katex'
 import 'katex/dist/katex.min.css'
 
 import { DocumentChat } from './document-chat'
+import { FileText, Upload, RefreshCw, Coffee } from 'lucide-react'
 
 type ProcessingStatus =
   | 'idle'
@@ -66,7 +69,7 @@ const customRenderers: Components = {
     if (isBase64) {
       return (
         <img
-          src={props.src}
+          src={props.src || '/placeholder.svg'}
           alt={props.alt || 'Image'}
           className='max-w-full'
         />
@@ -184,7 +187,7 @@ export function OCRDocumentProcessor() {
 
         // Also try to find any reference that just uses the ID in the URL part
         const regex = new RegExp(
-          `!\\[(.*?)\\]\\(${imgId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)`,
+          `!\\[(.*?)\\]\$$${imgId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\$$`,
           'g'
         )
         const matches = [...processedMarkdown.matchAll(regex)]
@@ -236,7 +239,7 @@ export function OCRDocumentProcessor() {
     }
 
     if (file.type !== 'application/pdf') {
-      setError('Oh honey, I only work with PDF files! Let\'s try again.')
+      setError("Oh honey, I only work with PDF files! Let's try again.")
       return
     }
 
@@ -282,7 +285,7 @@ export function OCRDocumentProcessor() {
       try {
         // First, check if the text is a JSON string that we need to parse
         let parsedContent
-        let contentText = data.text
+        const contentText = data.text
 
         if (
           typeof contentText === 'string' &&
@@ -388,31 +391,37 @@ export function OCRDocumentProcessor() {
               accept='application/pdf'
               className='hidden'
             />
-            <div 
+            <div
               className={`flex items-center justify-center px-4 py-2 border-2 border-dashed rounded-lg cursor-pointer transition-colors hover:bg-red-50 ${
-                file ? 'border-red-400 bg-red-50' : 'border-gray-300'
+                file ? 'border-red-400 bg-red-50' : 'border-amber-300'
               }`}
             >
-              <div className='text-center py-4'>
+              <div className='text-center py-6'>
                 {file ? (
-                  <div className='text-red-600 font-semibold'>{file.name}</div>
+                  <div className='flex flex-col items-center'>
+                    <FileText className='h-12 w-12 text-red-500 mb-2' />
+                    <div className='text-red-600 font-semibold'>
+                      {file.name}
+                    </div>
+                    <div className='text-amber-600 text-sm mt-1'>
+                      Ready for Auntie's review!
+                    </div>
+                  </div>
                 ) : (
                   <>
-                    <svg
-                      className='mx-auto h-10 w-10 text-red-400'
-                      fill='none'
-                      stroke='currentColor'
-                      viewBox='0 0 24 24'
-                    >
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        strokeWidth={1.5}
-                        d='M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-                      />
-                    </svg>
-                    <p className='mt-2 text-sm text-gray-600'>
+                    <div className='relative'>
+                      <div className='absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full w-6 h-6 flex items-center justify-center text-xs animate-pulse'>
+                        +
+                      </div>
+                      <div className='bg-amber-100 rounded-lg p-3'>
+                        <Upload className='h-10 w-10 text-red-500' />
+                      </div>
+                    </div>
+                    <p className='mt-3 text-amber-700 font-medium'>
                       Click to select your PDF, darling
+                    </p>
+                    <p className='text-xs text-amber-600 mt-1'>
+                      Auntie can't wait to see what you've got!
                     </p>
                   </>
                 )}
@@ -423,16 +432,28 @@ export function OCRDocumentProcessor() {
           <div className='flex gap-2'>
             <button
               onClick={handleUpload}
-              disabled={!file || status === 'uploading' || status === 'processing'}
-              className={`px-4 py-2 rounded-lg font-medium ${
+              disabled={
+                !file || status === 'uploading' || status === 'processing'
+              }
+              className={`px-4 py-2 rounded-lg font-medium flex items-center justify-center min-w-[160px] ${
                 !file || status === 'uploading' || status === 'processing'
                   ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                  : 'bg-red-600 text-white hover:bg-red-700 transition-colors'
+                  : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5'
               }`}
             >
-              {status === 'uploading' || status === 'processing'
-                ? 'Working on it...'
-                : 'Let Auntie Read It!'}
+              {status === 'uploading' ? (
+                <>
+                  <RefreshCw className='h-4 w-4 mr-2 animate-spin' />
+                  Uploading...
+                </>
+              ) : status === 'processing' ? (
+                <>
+                  <Coffee className='h-4 w-4 mr-2 animate-pulse' />
+                  Reading...
+                </>
+              ) : (
+                'Let Auntie Read It!'
+              )}
             </button>
 
             <button
@@ -441,7 +462,7 @@ export function OCRDocumentProcessor() {
               className={`px-4 py-2 rounded-lg font-medium ${
                 !file && !result
                   ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors'
+                  : 'bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors border border-amber-300'
               }`}
             >
               Start Fresh
@@ -450,48 +471,74 @@ export function OCRDocumentProcessor() {
         </div>
 
         {error && (
-          <div className='p-4 bg-red-50 border border-red-200 rounded-lg text-red-700'>
-            <div className='font-medium mb-1'>Oh dear! A little hiccup:</div>
-            <div>{error}</div>
+          <div className='p-4 bg-red-50 border-2 border-red-200 rounded-lg text-red-700 relative'>
+            <div className='absolute -top-3 -left-3 bg-red-100 rounded-full p-1'>
+              <div className='bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center'>
+                !
+              </div>
+            </div>
+            <div className='font-medium mb-1 pl-4'>
+              Oh dear! A little hiccup:
+            </div>
+            <div className='pl-4'>{error}</div>
           </div>
         )}
 
         {status === 'uploading' && (
           <div className='p-6 text-center'>
-            <div className='inline-block animate-spin rounded-full h-8 w-8 border-4 border-red-600 border-t-transparent'></div>
-            <p className='mt-3 text-gray-600'>Auntie is warming up her reading glasses...</p>
+            <div className='inline-block animate-spin rounded-full h-12 w-12 border-4 border-red-600 border-t-transparent'></div>
+            <p className='mt-3 text-amber-700 font-medium'>
+              Auntie is warming up her reading glasses...
+            </p>
           </div>
         )}
 
         {status === 'processing' && (
           <div className='p-6 text-center'>
-            <div className='inline-block animate-spin rounded-full h-8 w-8 border-4 border-red-600 border-t-transparent'></div>
-            <p className='mt-3 text-gray-600'>Just a moment, sweetie! Auntie is reading through your document...</p>
+            <div className='relative inline-block'>
+              <div className='animate-spin rounded-full h-16 w-16 border-4 border-red-600 border-t-transparent'></div>
+              <div className='absolute inset-0 flex items-center justify-center'>
+                <div className='h-8 w-8 bg-amber-100 rounded-full flex items-center justify-center'>
+                  <span className='text-red-600 text-xs font-bold'>PDF</span>
+                </div>
+              </div>
+            </div>
+            <p className='mt-4 text-amber-700 font-medium'>
+              Just a moment, sweetie! Auntie is reading through your document...
+            </p>
+            <p className='text-amber-600 text-sm italic mt-1'>
+              She's very thorough, you know!
+            </p>
           </div>
         )}
 
         {result && (
           <div className='space-y-4 w-full'>
             <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2'>
-              <h3 className='text-xl font-medium text-red-600'>Auntie's Analysis</h3>
+              <h3 className='text-xl font-medium text-red-600 font-serif flex items-center'>
+                <span className='bg-red-100 text-red-600 rounded-full w-8 h-8 inline-flex items-center justify-center mr-2'>
+                  <span className='text-sm'>✓</span>
+                </span>
+                Auntie's Analysis
+              </h3>
               <div className='flex items-center gap-2 flex-wrap'>
-                <p className='text-xs bg-red-50 text-red-600 px-3 py-1 rounded-full font-medium border border-red-100'>
+                <p className='text-xs bg-red-100 text-red-600 px-3 py-1 rounded-full font-medium border border-red-200 shadow-sm'>
                   Analysis complete, sweetie!
                 </p>
               </div>
             </div>
 
             <Tabs defaultValue='content' className='w-full'>
-              <TabsList className='mb-2 bg-red-50 p-1 rounded-md'>
-                <TabsTrigger 
-                  value='content' 
-                  className='data-[state=active]:bg-red-600 data-[state=active]:text-white'
+              <TabsList className='mb-2 bg-gradient-to-r from-red-50 to-amber-50 p-1 rounded-md'>
+                <TabsTrigger
+                  value='content'
+                  className='data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-red-500 data-[state=active]:text-white'
                 >
                   Document Content
                 </TabsTrigger>
-                <TabsTrigger 
+                <TabsTrigger
                   value='chat'
-                  className='data-[state=active]:bg-red-600 data-[state=active]:text-white'
+                  className='data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-red-500 data-[state=active]:text-white'
                 >
                   Ask Auntie
                 </TabsTrigger>
@@ -499,13 +546,15 @@ export function OCRDocumentProcessor() {
 
               <TabsContent value='content' className='space-y-4'>
                 <div className='flex items-center gap-2 justify-end'>
-                  <Button 
-                    onClick={toggleViewMode} 
-                    variant='outline' 
+                  <Button
+                    onClick={toggleViewMode}
+                    variant='outline'
                     size='sm'
                     className='border-red-200 hover:bg-red-50 text-red-600'
                   >
-                    {viewMode === 'rendered' ? 'View Raw Text' : 'View Rendered'}
+                    {viewMode === 'rendered'
+                      ? 'View Raw Text'
+                      : 'View Rendered'}
                   </Button>
                   {result.pages && result.pages.length > 1 && (
                     <Button
@@ -518,7 +567,9 @@ export function OCRDocumentProcessor() {
                       size='sm'
                       className='border-red-200 hover:bg-red-50 text-red-600'
                     >
-                      {displayMode === 'paginated' ? 'Show Combined' : 'Show Pages'}
+                      {displayMode === 'paginated'
+                        ? 'Show Combined'
+                        : 'Show Pages'}
                     </Button>
                   )}
                 </div>
@@ -527,10 +578,10 @@ export function OCRDocumentProcessor() {
                   <Textarea
                     value={result.text}
                     readOnly
-                    className='h-[500px] font-mono text-sm'
+                    className='h-[500px] font-mono text-sm border-amber-200 focus-visible:ring-red-400'
                   />
                 ) : (
-                  <div className='bg-white border rounded-md p-4 max-h-[80vh] h-[500px] overflow-auto'>
+                  <div className='bg-white border-2 border-amber-200 rounded-md p-4 max-h-[80vh] h-[700px] overflow-auto shadow-inner'>
                     {result.pages && result.pages.length > 0 ? (
                       displayMode === 'paginated' ? (
                         // Paginated view
@@ -540,8 +591,11 @@ export function OCRDocumentProcessor() {
                               key={index}
                               className='mb-8 pb-8 border-b last:border-b-0'
                             >
-                              <div className='bg-gray-50 p-2 mb-2 text-sm text-gray-500 rounded'>
-                                Page {page.index + 1}
+                              <div className='bg-amber-50 p-2 mb-2 text-sm text-amber-700 rounded flex items-center'>
+                                <div className='bg-amber-200 text-amber-800 rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2'>
+                                  {page.index + 1}
+                                </div>
+                                <span>Page {page.index + 1}</span>
                               </div>
                               <div className='prose prose-sm max-w-none overflow-x-auto'>
                                 <ReactMarkdown
@@ -586,11 +640,20 @@ export function OCRDocumentProcessor() {
               </TabsContent>
 
               <TabsContent value='chat'>
-                <div className='p-4 bg-red-50 border border-red-100 rounded-md text-red-700 text-sm mb-4'>
-                  <p className='font-medium'>Ask Auntie About Your Document</p>
+                <div className='p-4 bg-red-50 border-2 border-red-200 rounded-md text-red-700 text-sm mb-4 relative'>
+                  <div className='absolute -top-3 -right-3 bg-white rounded-full p-1 shadow-sm'>
+                    <div className='bg-red-100 rounded-full p-1'>
+                      <div className='bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs'>
+                        ?
+                      </div>
+                    </div>
+                  </div>
+                  <p className='font-medium mb-1'>
+                    Ask Auntie About Your Document
+                  </p>
                   <p>
-                    Need to know something specific? Just ask me, honey! 
-                    I'll search through your document and find just what you need.
+                    Need to know something specific? Just ask me, honey! I'll
+                    search through your document and find just what you need.
                   </p>
                 </div>
                 <DocumentChat
