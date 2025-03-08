@@ -132,6 +132,8 @@ export function OCRDocumentProcessor() {
     Record<number, string>
   >({})
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [documentUrl, setDocumentUrl] = useState<string>('')
+  const [inputMethod, setInputMethod] = useState<'file' | 'url'>('file')
 
   // Process images once when result changes
   useEffect(() => {
@@ -385,6 +387,7 @@ export function OCRDocumentProcessor() {
     setError(null)
     setStatus('idle')
     setProcessedMarkdown({})
+    setDocumentUrl('')
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -394,64 +397,235 @@ export function OCRDocumentProcessor() {
     setViewMode(viewMode === 'rendered' ? 'raw' : 'rendered')
   }
 
+  // Add a new function to handle URL submission
+  const handleUrlSubmit = async () => {
+    if (!documentUrl.trim()) {
+      setError('Sweetie, you need to enter a URL first!')
+      return
+    }
+
+    try {
+      setStatus('processing')
+      setError(null)
+
+      // Process the URL with the API
+      const processResponse = await fetch('/api/process-url', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: documentUrl }),
+      })
+
+      if (!processResponse.ok) {
+        const errorData = await processResponse.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Failed to process document URL')
+      }
+
+      // Safely parse the response as JSON
+      let data;
+      try {
+        data = await processResponse.json();
+      } catch (jsonError) {
+        console.error('Failed to parse JSON response:', jsonError);
+        if (jsonError instanceof SyntaxError && jsonError.message.includes('Unexpected token')) {
+          throw new Error("Auntie couldn't make sense of this document. It might be too large or complex for processing.");
+        }
+        throw new Error('Failed to process the document response');
+      }
+      
+      console.log('OCR Response data from URL:', data)
+
+      try {
+        // First, check if the text is a JSON string that we need to parse
+        let parsedContent
+        const contentText = data.text
+
+        if (
+          typeof contentText === 'string' &&
+          (contentText.startsWith('{') || contentText.startsWith('['))
+        ) {
+          try {
+            parsedContent = JSON.parse(contentText)
+          } catch (e) {
+            console.warn('Failed to parse response text as JSON', e)
+            parsedContent = null
+          }
+        }
+
+        // Handle structured data with pages
+        if (
+          parsedContent &&
+          parsedContent.pages &&
+          Array.isArray(parsedContent.pages)
+        ) {
+          console.log('Setting structured result with pages from URL')
+          setResult({
+            text: contentText,
+            pages: parsedContent.pages,
+            rawResponse: parsedContent,
+          })
+        }
+        // Handle the sample data format
+        else if (data.hasStructuredData && typeof data.text === 'string') {
+          try {
+            const structuredData = JSON.parse(data.text)
+            if (structuredData.pages && Array.isArray(structuredData.pages)) {
+              console.log('Setting structured result from API response for URL')
+              setResult({
+                text: data.text,
+                pages: structuredData.pages,
+                rawResponse: structuredData,
+              })
+            } else {
+              // Fallback to plain text
+              setResult({
+                text: data.text,
+                pages: [],
+              })
+            }
+          } catch (e) {
+            console.error('Error parsing structured data from URL:', e)
+            setResult({
+              text: data.text,
+              pages: [],
+            })
+          }
+        }
+        // Handle simple text content
+        else {
+          console.log('Setting plain text result from URL')
+          setResult({
+            text: data.text,
+            pages: [],
+          })
+        }
+      } catch (err) {
+        console.error('Error processing OCR result from URL:', err)
+        // Fallback to simple text
+        setResult({
+          text:
+            typeof data.text === 'string' ? data.text : JSON.stringify(data),
+          pages: [],
+        })
+      }
+
+      setStatus('complete')
+    } catch (err) {
+      console.error('OCR processing error for URL:', err)
+      setError(err instanceof Error ? err.message : 'An unknown error occurred')
+      setStatus('error')
+    }
+  }
+
   return (
     <div className='w-full space-y-6 mb-12'>
       <div className='space-y-4'>
-        <div className='flex flex-col sm:flex-row gap-4'>
-          <label className='flex-1'>
-            <input
-              type='file'
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept='application/pdf'
-              className='hidden'
-            />
-            <div
-              className={`flex items-center justify-center px-4 py-2 border-2 border-dashed rounded-lg cursor-pointer transition-colors hover:bg-red-50 ${
-                file ? 'border-red-400 bg-red-50' : 'border-amber-300'
+        {/* Add tabs for selecting input method */}
+        <div className="flex justify-center mb-4">
+          <div className="inline-flex p-1 bg-amber-100 rounded-lg">
+            <button
+              onClick={() => setInputMethod('file')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                inputMethod === 'file'
+                  ? 'bg-red-500 text-white'
+                  : 'text-amber-800 hover:bg-amber-200'
               }`}
             >
-              <div className='text-center py-6'>
-                {file ? (
-                  <div className='flex flex-col items-center'>
-                    <FileText className='h-12 w-12 text-red-500 mb-2' />
-                    <div className='text-red-600 font-semibold'>
-                      {file.name}
-                    </div>
-                    <div className='text-amber-600 text-sm mt-1'>
-                      Ready for Auntie&apos;s review!
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div className='relative'>
-                      <div className='absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full w-6 h-6 flex items-center justify-center text-xs animate-pulse'>
-                        +
+              Upload PDF
+            </button>
+            <button
+              onClick={() => setInputMethod('url')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                inputMethod === 'url'
+                  ? 'bg-red-500 text-white'
+                  : 'text-amber-800 hover:bg-amber-200'
+              }`}
+            >
+              PDF URL
+            </button>
+          </div>
+        </div>
+
+        <div className='flex flex-col sm:flex-row gap-4'>
+          {inputMethod === 'file' ? (
+            // File upload input - existing code
+            <label className='flex-1'>
+              <input
+                type='file'
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept='application/pdf'
+                className='hidden'
+              />
+              <div
+                className={`flex items-center justify-center px-4 py-2 border-2 border-dashed rounded-lg cursor-pointer transition-colors hover:bg-red-50 ${
+                  file ? 'border-red-400 bg-red-50' : 'border-amber-300'
+                }`}
+              >
+                <div className='text-center py-6'>
+                  {file ? (
+                    <div className='flex flex-col items-center'>
+                      <FileText className='h-12 w-12 text-red-500 mb-2' />
+                      <div className='text-red-600 font-semibold'>
+                        {file.name}
                       </div>
-                      <div className='bg-amber-100 rounded-lg p-3'>
-                        <Upload className='h-10 w-10 text-red-500' />
+                      <div className='text-amber-600 text-sm mt-1'>
+                        Ready for Auntie&apos;s review!
                       </div>
                     </div>
-                    <p className='mt-3 text-amber-700 font-medium'>
-                      Click to select your PDF, darling
-                    </p>
-                    <p className='text-xs text-amber-600 mt-1'>
-                      Auntie can&apos;t wait to see what you&apos;ve got!
-                    </p>
-                  </>
-                )}
+                  ) : (
+                    <>
+                      <div className='relative'>
+                        <div className='absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full w-6 h-6 flex items-center justify-center text-xs animate-pulse'>
+                          +
+                        </div>
+                        <div className='bg-amber-100 rounded-lg p-3'>
+                          <Upload className='h-10 w-10 text-red-500' />
+                        </div>
+                      </div>
+                      <p className='mt-3 text-amber-700 font-medium'>
+                        Click to select your PDF, darling
+                      </p>
+                      <p className='text-xs text-amber-600 mt-1'>
+                        Auntie can&apos;t wait to see what you&apos;ve got!
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </label>
+          ) : (
+            // URL input
+            <div className='flex-1'>
+              <div className={`border-2 rounded-lg transition-colors ${documentUrl ? 'border-red-400 bg-red-50' : 'border-amber-300'}`}>
+                <div className='p-3'>
+                  <label className='text-amber-700 font-medium mb-2 block'>Enter a public PDF URL:</label>
+                  <input
+                    type='url'
+                    value={documentUrl}
+                    onChange={(e) => setDocumentUrl(e.target.value)}
+                    placeholder='https://example.com/document.pdf'
+                    className='w-full p-2 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500'
+                  />
+                  <p className='text-xs text-amber-600 mt-1'>
+                    Auntie will fetch it for you, sweetie!
+                  </p>
+                </div>
               </div>
             </div>
-          </label>
+          )}
 
           <div className='flex gap-2'>
             <button
-              onClick={handleUpload}
+              onClick={inputMethod === 'file' ? handleUpload : handleUrlSubmit}
               disabled={
-                !file || status === 'uploading' || status === 'processing'
+                (inputMethod === 'file' && (!file || status === 'uploading' || status === 'processing')) ||
+                (inputMethod === 'url' && (!documentUrl || status === 'processing'))
               }
               className={`px-4 py-2 rounded-lg font-medium flex items-center justify-center min-w-[160px] ${
-                !file || status === 'uploading' || status === 'processing'
+                (inputMethod === 'file' && (!file || status === 'uploading' || status === 'processing')) ||
+                (inputMethod === 'url' && (!documentUrl || status === 'processing'))
                   ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                   : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5'
               }`}
@@ -473,9 +647,9 @@ export function OCRDocumentProcessor() {
 
             <button
               onClick={handleClear}
-              disabled={!file && !result}
+              disabled={!file && !result && !documentUrl}
               className={`px-4 py-2 rounded-lg font-medium ${
-                !file && !result
+                !file && !result && !documentUrl
                   ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                   : 'bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors border border-amber-300'
               }`}
