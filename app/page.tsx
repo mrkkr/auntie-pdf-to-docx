@@ -46,14 +46,14 @@ export default function HomePage() {
 
           <div className='bg-white rounded-xl shadow-lg p-6 md:p-8 border-2 border-red-200 relative'>
             <div className='absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-1 rounded-full font-medium shadow-md'>
-              Auntie's Reading Room
+              Auntie&apos;s Reading Room
             </div>
             <div className='mb-6 text-center'>
               <h2 className='text-xl font-serif font-semibold text-red-600 mb-2'>
                 Upload Your PDF
               </h2>
               <p className='text-amber-700 italic'>
-                "Honey, let me take a look at that document for you!"
+                &quot;Honey, let me take a look at that document for you!&quot;
               </p>
             </div>
             <OCRDocumentProcessor />
@@ -70,9 +70,10 @@ export default function HomePage() {
                 How Auntie Helps
               </h3>
               <p className='text-amber-700'>
-                I'll extract all that important text from your PDF documents
-                while keeping everything organized, just like I do with family
-                recipes! I'm powered by top-notch OCR technology, darling.
+                I&apos;ll extract all that important text from your PDF
+                documents while keeping everything organized, just like I do
+                with family recipes! I&apos;m powered by top-notch OCR
+                technology, darling.
               </p>
             </div>
 
@@ -81,7 +82,7 @@ export default function HomePage() {
                 Tip!
               </div>
               <h3 className='font-medium text-amber-800 mb-2 text-lg font-serif pl-6'>
-                Auntie's Tips
+                Auntie&apos;s Tips
               </h3>
               <p className='text-amber-700'>
                 For best results, make sure your PDFs are not password
@@ -92,7 +93,8 @@ export default function HomePage() {
           </div>
 
           <div className='mt-10 text-center text-amber-700 italic'>
-            "Let Auntie take care of all your document needs, sweetie!"
+            &quot;Let Auntie take care of all your document needs,
+            sweetie!&quot;
           </div>
         </div>
       </div>

@@ -1,4 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Auntie PDF - Your Sassy PDF Guru
+
+![Auntie PDF Preview](./app/opengraph-image.png)
+
+Your all-knowing guide that unpacks every PDF into clear, actionable insights.
+
+## About
+
+Auntie PDF is a web application that helps users extract information and insights from PDF documents. With a sassy, helpful personality, Auntie PDF makes understanding complex documents easier and more engaging.
+
+## Features
+
+- **PDF Parsing**: Upload and analyze PDF documents of any size
+- **Chat Interface**: Ask questions about your documents and get instant answers
+- **Intelligent Insights**: Get actionable information and summaries from your PDFs
+
+## Technology
+
+Auntie PDF leverages advanced AI technologies including:
+
+- **Mistral OCR**: We use [Mistral OCR](https://mistral.ai/en/news/mistral-ocr) for powerful PDF parsing capabilities. This technology enables our application to accurately extract text and structure from PDFs, even from complex layouts and formats.
+- **Next.js**: Built with the React framework for production-grade applications
+- **AI-powered chat**: Interact naturally with your documents through conversational AI
 
 ## Getting Started
 
@@ -16,21 +38,13 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+To learn more about the technologies used in this project:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Mistral OCR](https://mistral.ai/en/news/mistral-ocr) - Learn about the OCR technology powering our PDF parsing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Connect
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Follow the creator: [@deepwhitman](https://x.com/deepwhitman)

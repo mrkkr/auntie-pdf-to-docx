@@ -158,7 +158,7 @@ export function DocumentChat({
               Ask questions about your document to get insights and information.
             </p>
             <p className='text-amber-600 text-sm italic mt-1'>
-              "What would you like to know, dearie?"
+              &quot;What would you like to know, dearie?&quot;
             </p>
           </div>
         ) : (

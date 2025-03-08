@@ -128,7 +128,6 @@ export function OCRDocumentProcessor() {
   const [displayMode, setDisplayMode] = useState<'paginated' | 'combined'>(
     'paginated'
   )
-  const [showHtmlDebug, setShowHtmlDebug] = useState(false)
   const [processedMarkdown, setProcessedMarkdown] = useState<
     Record<number, string>
   >({})
@@ -404,7 +403,7 @@ export function OCRDocumentProcessor() {
                       {file.name}
                     </div>
                     <div className='text-amber-600 text-sm mt-1'>
-                      Ready for Auntie's review!
+                      Ready for Auntie&apos;s review!
                     </div>
                   </div>
                 ) : (
@@ -421,7 +420,7 @@ export function OCRDocumentProcessor() {
                       Click to select your PDF, darling
                     </p>
                     <p className='text-xs text-amber-600 mt-1'>
-                      Auntie can't wait to see what you've got!
+                      Auntie can&apos;t wait to see what you&apos;ve got!
                     </p>
                   </>
                 )}
@@ -507,7 +506,7 @@ export function OCRDocumentProcessor() {
               Just a moment, sweetie! Auntie is reading through your document...
             </p>
             <p className='text-amber-600 text-sm italic mt-1'>
-              She's very thorough, you know!
+              She&apos;s very thorough, you know!
             </p>
           </div>
         )}
@@ -519,7 +518,7 @@ export function OCRDocumentProcessor() {
                 <span className='bg-red-100 text-red-600 rounded-full w-8 h-8 inline-flex items-center justify-center mr-2'>
                   <span className='text-sm'>✓</span>
                 </span>
-                Auntie's Analysis
+                Auntie&apos;s Analysis
               </h3>
               <div className='flex items-center gap-2 flex-wrap'>
                 <p className='text-xs bg-red-100 text-red-600 px-3 py-1 rounded-full font-medium border border-red-200 shadow-sm'>
@@ -652,8 +651,9 @@ export function OCRDocumentProcessor() {
                     Ask Auntie About Your Document
                   </p>
                   <p>
-                    Need to know something specific? Just ask me, honey! I'll
-                    search through your document and find just what you need.
+                    Need to know something specific? Just ask me, honey!
+                    I&apos;ll search through your document and find just what
+                    you need.
                   </p>
                 </div>
                 <DocumentChat
