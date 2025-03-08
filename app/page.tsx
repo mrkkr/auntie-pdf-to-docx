@@ -5,7 +5,7 @@ export default function HomePage() {
   return (
     <div className='min-h-screen bg-gradient-to-b from-amber-50 to-white'>
       {/* Sponsorship Banner */}
-      <div className='w-full bg-gradient-to-r from-purple-700 via-indigo-600 to-blue-500 text-white py-2 text-center'>
+      <div className='w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white py-2 text-center'>
         <a
           href='https://www.shortsgenerator.com/'
           target='_blank'
