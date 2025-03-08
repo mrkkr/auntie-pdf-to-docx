@@ -260,9 +260,11 @@ export function OCRDocumentProcessor() {
 
       // Handle 413 Payload Too Large error specifically
       if (uploadResponse.status === 413) {
-        throw new Error("Oh my, that PDF is too big for Auntie's reading glasses! Please try a smaller document (under 10MB).")
+        throw new Error(
+          "Oh my, that PDF is too big for Auntie's reading glasses! Please try a smaller document (under 10MB)."
+        )
       }
-      
+
       if (!uploadResponse.ok) {
         const errorData = await uploadResponse.json()
         throw new Error(errorData.error || 'Failed to upload file')
@@ -286,17 +288,22 @@ export function OCRDocumentProcessor() {
       }
 
       // Safely parse the response as JSON
-      let data;
+      let data
       try {
-        data = await processResponse.json();
+        data = await processResponse.json()
       } catch (jsonError) {
-        console.error('Failed to parse JSON response:', jsonError);
-        if (jsonError instanceof SyntaxError && jsonError.message.includes('Unexpected token')) {
-          throw new Error("Auntie couldn't make sense of this document. It might be too large or complex for processing.");
+        console.error('Failed to parse JSON response:', jsonError)
+        if (
+          jsonError instanceof SyntaxError &&
+          jsonError.message.includes('Unexpected token')
+        ) {
+          throw new Error(
+            "Auntie couldn't make sense of this document. It might be too large or complex for processing."
+          )
         }
-        throw new Error('Failed to process the document response');
+        throw new Error('Failed to process the document response')
       }
-      
+
       console.log('OCR Response data:', data)
 
       try {
@@ -423,17 +430,22 @@ export function OCRDocumentProcessor() {
       }
 
       // Safely parse the response as JSON
-      let data;
+      let data
       try {
-        data = await processResponse.json();
+        data = await processResponse.json()
       } catch (jsonError) {
-        console.error('Failed to parse JSON response:', jsonError);
-        if (jsonError instanceof SyntaxError && jsonError.message.includes('Unexpected token')) {
-          throw new Error("Auntie couldn't make sense of this document. It might be too large or complex for processing.");
+        console.error('Failed to parse JSON response:', jsonError)
+        if (
+          jsonError instanceof SyntaxError &&
+          jsonError.message.includes('Unexpected token')
+        ) {
+          throw new Error(
+            "Auntie couldn't make sense of this document. It might be too large or complex for processing."
+          )
         }
-        throw new Error('Failed to process the document response');
+        throw new Error('Failed to process the document response')
       }
-      
+
       console.log('OCR Response data from URL:', data)
 
       try {
@@ -522,8 +534,8 @@ export function OCRDocumentProcessor() {
     <div className='w-full space-y-6 mb-12'>
       <div className='space-y-4'>
         {/* Add tabs for selecting input method */}
-        <div className="flex justify-center mb-4">
-          <div className="inline-flex p-1 bg-amber-100 rounded-lg">
+        <div className='flex justify-center mb-4'>
+          <div className='inline-flex p-1 bg-amber-100 rounded-lg'>
             <button
               onClick={() => setInputMethod('file')}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -598,9 +610,15 @@ export function OCRDocumentProcessor() {
           ) : (
             // URL input
             <div className='flex-1'>
-              <div className={`border-2 rounded-lg transition-colors ${documentUrl ? 'border-red-400 bg-red-50' : 'border-amber-300'}`}>
+              <div
+                className={`border-2 rounded-lg transition-colors ${
+                  documentUrl ? 'border-red-400 bg-red-50' : 'border-amber-300'
+                }`}
+              >
                 <div className='p-3'>
-                  <label className='text-amber-700 font-medium mb-2 block'>Enter a public PDF URL:</label>
+                  <label className='text-amber-700 font-medium mb-2 block'>
+                    Enter a public PDF URL:
+                  </label>
                   <input
                     type='url'
                     value={documentUrl}
@@ -620,12 +638,20 @@ export function OCRDocumentProcessor() {
             <button
               onClick={inputMethod === 'file' ? handleUpload : handleUrlSubmit}
               disabled={
-                (inputMethod === 'file' && (!file || status === 'uploading' || status === 'processing')) ||
-                (inputMethod === 'url' && (!documentUrl || status === 'processing'))
+                (inputMethod === 'file' &&
+                  (!file ||
+                    status === 'uploading' ||
+                    status === 'processing')) ||
+                (inputMethod === 'url' &&
+                  (!documentUrl || status === 'processing'))
               }
               className={`px-4 py-2 rounded-lg font-medium flex items-center justify-center min-w-[160px] ${
-                (inputMethod === 'file' && (!file || status === 'uploading' || status === 'processing')) ||
-                (inputMethod === 'url' && (!documentUrl || status === 'processing'))
+                (inputMethod === 'file' &&
+                  (!file ||
+                    status === 'uploading' ||
+                    status === 'processing')) ||
+                (inputMethod === 'url' &&
+                  (!documentUrl || status === 'processing'))
                   ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                   : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5'
               }`}
@@ -767,10 +793,10 @@ export function OCRDocumentProcessor() {
                   <Textarea
                     value={result.text}
                     readOnly
-                    className='h-[500px] font-mono text-sm border-amber-200 focus-visible:ring-red-400'
+                    className='h-[700px] font-mono text-sm border-amber-200 focus-visible:ring-red-400'
                   />
                 ) : (
-                  <div className='bg-white border-2 border-amber-200 rounded-md p-4 max-h-[80vh] h-[700px] overflow-auto shadow-inner'>
+                  <div className='bg-white border-2 border-amber-200 rounded-md p-4 max-h-[90vh] h-[800px] overflow-auto shadow-inner'>
                     {result.pages && result.pages.length > 0 ? (
                       displayMode === 'paginated' ? (
                         // Paginated view

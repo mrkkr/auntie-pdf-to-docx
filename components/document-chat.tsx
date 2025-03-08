@@ -148,7 +148,7 @@ export function DocumentChat({
         </Alert>
       )}
 
-      <div className='border-2 border-amber-200 rounded-md bg-white p-4 max-h-[400px] overflow-y-auto shadow-inner'>
+      <div className='border-2 border-amber-200 rounded-md bg-white p-4 max-h-[700px] overflow-y-auto shadow-inner'>
         {messages.length === 0 ? (
           <div className='text-center p-8'>
             <div className='bg-red-50 rounded-full w-16 h-16 mx-auto flex items-center justify-center mb-3'>
