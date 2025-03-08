@@ -48,6 +48,14 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+### Deployment Notes
+
+If deploying to Vercel, please note that you may encounter `413 Payload Too Large` errors when uploading large PDF files. This is due to Vercel's body size limits for serverless functions. For production use with large files, consider:
+
+- Setting up a custom server with higher limits
+- Using a file storage service like AWS S3 for initial file uploads
+- Breaking down large PDFs into smaller chunks
+
 ## Demo
 
 Try it out at: [Auntie PDF](https://auntiepdf.com)
