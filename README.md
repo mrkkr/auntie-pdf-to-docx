@@ -1,32 +1,31 @@
-# Auntie PDF - Your Sassy PDF Guru
+# Auntie PDF - PDF to DOCX Converter
 
-![Auntie PDF Preview](./demo.gif)
-
-Your all-knowing guide that unpacks every PDF into clear, actionable insights.
-
-## About
-
-Auntie PDF is a web application that helps users extract information and insights from PDF documents. With a sassy, helpful personality, Auntie PDF makes understanding complex documents easier and more engaging.
+A command-line tool that converts PDF documents into well-formatted DOCX files while preserving structure and formatting. Based on Auntie PDF done by https://github.com/btahir.
 
 ## Features
 
-- **PDF Parsing**: Upload and analyze PDF documents of any size
-- **Chat Interface**: Ask questions about your documents and get instant answers
-- **Intelligent Insights**: Get actionable information and summaries from your PDFs
+- **Smart PDF Parsing**: Extract text and structure from PDF documents
+- **Format Preservation**: Maintains headings, lists, and text styles
+- **Image Support**: Includes images from the PDF in the output DOCX
+- **Intelligent Formatting**: Detects and preserves:
+  - Multiple heading levels
+  - Bullet lists
+  - Bold and italic text
+  - Document structure
 
 ## Technology
 
-Auntie PDF leverages advanced AI technologies including:
+Auntie PDF leverages:
 
-- **Mistral OCR**: We use [Mistral OCR](https://mistral.ai/en/news/mistral-ocr) for powerful PDF parsing capabilities. This technology enables our application to accurately extract text and structure from PDFs, even from complex layouts and formats.
-- **Next.js**: Built with the React framework for production-grade applications
-- **AI-powered chat**: Interact naturally with your documents through conversational AI
+- **Mistral OCR**: For powerful PDF parsing capabilities
+- **docx**: For creating properly formatted DOCX files
+- **TypeScript**: For type-safe code execution
 
 ## Getting Started
 
 ### Environment Variables
 
-Create a `.env.local` file in the root directory with the following variables:
+Create a `.env.local` file in the root directory with:
 
 ```
 MISTRAL_API_KEY="your_mistral_api_key"
@@ -34,29 +33,25 @@ MISTRAL_API_KEY="your_mistral_api_key"
 
 You can obtain a Mistral API key by signing up at [Mistral AI's platform](https://mistral.ai/).
 
-First, run the development server:
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Usage
 
-### Deployment Notes
+Convert a PDF file to DOCX:
 
-This app is deployed on Vercel and has a file upload limit of 4.5MB due to Vercel's request body size restriction. You can still upload larger files locally or use the public URL option.
+```bash
+npm run process-pdf /path/to/your/file.pdf
+```
 
-To bypass this limitation, we can use services like UploadThing, which upload files directly to your storage (or theirs) using a presigned URL, or implement a similar solution ourselves. I’m still undecided on whether to add this layer.
+Optionally specify output path:
 
-## Demo
-
-Try it out at: [Auntie PDF](https://auntiepdf.com)
+```bash
+npm run process-pdf /path/to/your/file.pdf /desired/output/path.docx
+```
 
 ## License
 
@@ -64,14 +59,4 @@ Try it out at: [Auntie PDF](https://auntiepdf.com)
 
 ## Acknowledgments
 
-- Inspired by Mistral's OCR release
-
-## Follow Me
-
-If you're interested in following all the random projects I'm working on, you can find me on Twitter:
-
-[![Twitter Follow](https://img.shields.io/twitter/follow/deepwhitman?style=social)](https://x.com/deepwhitman)
-
-## Sponsored by
-
-[Shorts Generator](https://www.shortsgenerator.com/) - Create viral short videos in minutes!
+- Powered by Mistral's OCR technology
